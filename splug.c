@@ -2,79 +2,117 @@
 #include <stdlib.h>
 #include <string.h>
 
+void insert();
 void registration();
 void login();
+void logout();
+void engword();
+void wordsort();
+void accountout();
 
 int logining=0;
 char onID[100];
 
 typedef struct user 
 {
+    struct user* next1;
     char userid[100];
     char userpw[100];
     char username[100];
-    struct user* next;
 } user;
+
+typedef struct word 
+{
+    struct word* next2;
+    char kor[100];
+    char eng[100];
+} word;
 
 int main()
 {
+    user* head1 = malloc(sizeof(user));
+    head1->next1 = NULL;
+    word* head2 = malloc(sizeof(word));
+    head2->next2 = NULL;
     while(1)
     {
-        int menu=0;
-
-        user* head = malloc(sizeof(user));
-        head->next = NULL;
-        FILE *fp;
+        FILE *fp;//id 목록 연결 리스트에 담기
         fp = fopen("id.txt", "rb");
-        while(feof(fp) != 0)
+        while(!feof(fp))
         {
             char id[100], pw[100], name[100];
             user* _user = malloc(sizeof(user));
-            _user->next = head->next;
+            _user->next1 = head1->next1;
             fscanf(fp, "%s %s %s", id, pw, name);
             strcpy(_user -> userid, id);
             strcpy(_user -> userpw, pw);
             strcpy(_user -> username, name);
-            head->next = _user;
+            head1->next1 = _user;
         }
         fclose(fp);
+        
+        FILE *fp;//영단어 목록 연결 리스트에 담기
+        fp = fopen("dic.txt", "rb");
+        while(!feof(fp))
+        {
+            char ko[100], en[100];
+            word* _word = malloc(sizeof(word));
+            _word->next2 = head2->next2;
+            fscanf(fp, "%s %s", en, ko);
+            strcpy(_word -> eng, en);
+            strcpy(_word -> kor, ko);
+            head2->next2 = _word;
+        }
+        fclose(fp);
+
+        int menu=0;
+
         if(logining==1)
         {
             printf("안녕하세요! %s님!\n", onID);
         }
         printf("==메뉴==\n1. 회원가입\n2. 로그인\n3. 로그아웃\n4.영어 단어 맞추기\n5. 회원 탈퇴\n6. 프로그램 종료\n:");
         scanf("%d",&menu);
+        getchar();
         if(menu==1)
         {
             if(logining==1)
             {
-                printf("이미 로그인 중 입니다. 초기 화면으로 돌아갑니다.");
+                printf("이미 로그인 중 입니다. 초기 화면으로 돌아갑니다.\n");
             }
             else
             {
-                registration(head);
+                registration(head1);
             }
         }
         else if(menu==2)
         {
             if(logining==1)
             {
-                printf("이미 로그인 중 입니다. 초기 화면으로 돌아갑니다.");
+                printf("이미 로그인 중 입니다. 초기 화면으로 돌아갑니다.\n");
             }
             else
-                login(head);
+                login(head1);
         }
         else if(menu==3)
         {
-            
+            if(logining==0)
+            {
+                printf("로그인 상태가 아닙니다. 초기 화면으로 돌아갑니다.\n");
+            }
+            else
+            {
+                logout();
+            }
         }
         else if(menu==4)
         {
-            
+            wordsort();
+            engword();
         }
         else if(menu==5)
         {
-            
+            accountout();
         }
         else if(menu==6)
         {
@@ -84,7 +122,6 @@ int main()
         else
         {
             printf("메뉴는 1~6까지 숫자로 입력해주세요.\n");
-            getchar();
         }
     }
     return 0;
@@ -99,7 +136,7 @@ void registration(user* target)
         int reset=0;
         printf("아아디 : ");
         scanf("%s", r_id);
-        user* temp = target->next;
+        user* temp = target->next1;
         while(temp != NULL)
         {
             if(strcmp(temp->userid, r_id)==0)
@@ -108,7 +145,7 @@ void registration(user* target)
                 reset=1;
                 break;
             }
-            temp = temp->next;
+            temp = temp->next1;
         }
         if (reset==0)
         {
@@ -138,7 +175,7 @@ void login(user* target)
         scanf("%s",loginid);
         printf("비밀번호: ");
         scanf("%s",loginpw);
-        user* temp = target->next;
+        user* temp = target->next1;
         while(temp != NULL)
         {
             if(strcmp(temp->userid, loginid)==0)
@@ -149,14 +186,42 @@ void login(user* target)
                     break;
                 }
             }
-            temp = temp->next;
+            temp = temp->next1;
         }
-        printf("잘못된 아이디 혹은 비밀번호 입니다. 다시 입력해주세요.\n");
+        if (conform==0)
+            printf("잘못된 아이디 혹은 비밀번호 입니다. 다시 입력해주세요.\n");
+        else if (conform==1)
+        {
+            printf("로그인 성공!\n");
+            logining=1;
+            strcpy(onID,loginid);
+            break;
+        }
     }
-    if (conform==1)
+}
+
+void logout()
+{
+    char yesorno;
+        
+    printf("정말 로그아웃 하시겠습니까? [y/n]: ");
+    
+    scanf("%c", &yesorno);
+    
+    if (yesorno == 'y')
     {
-        printf("로그인 성공!\n");
-        logining=1;
-        strcpy(onID,loginid);
+        logining=0;
     }
+    else if (yesorno == 'n')
+        printf("로그아웃이 취소되었습니다. 초기화면으로 돌아갑니다.\n");
+}
+
+void engword()
+{
+
+}
+
+void accountout()
+{
+    
 }
