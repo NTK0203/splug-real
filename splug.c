@@ -101,9 +101,7 @@ int main()
                 printf("로그인 상태가 아닙니다. 초기 화면으로 돌아갑니다.\n");
             }
             else
-            {
                 logout();
-            }
         }
         else if(menu==4)
         {
@@ -112,7 +110,12 @@ int main()
         }
         else if(menu==5)
         {
-            accountout();
+            if(logining==0)
+            {
+                printf("로그인 상태가 아닙니다. 초기 화면으로 돌아갑니다.\n");
+            }
+            else
+                accountout(head1);
         }
         else if(menu==6)
         {
@@ -221,7 +224,26 @@ void engword()
 
 }
 
-void accountout()
+void accountout(user* target)
 {
+    char yesorno;
+        
+    printf("정말 회원을 탈퇴 하시겠습니까? [y/n]: ");
     
+    scanf("%c", &yesorno);
+    
+    if (yesorno == 'y')
+    {
+        user* temp = target->next1;
+        while(temp != NULL)
+        {
+            if(strcmp(temp->userid, onID)==0)
+            {
+                
+            }
+            temp = temp->next1;
+        }
+    }
+    else if (yesorno == 'n')
+        printf("회원 탈퇴가 취소되었습니다. 초기화면으로 돌아갑니다.\n");
 }
