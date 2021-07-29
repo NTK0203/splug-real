@@ -9,6 +9,7 @@ void logout();
 void engword();
 void wordsort();
 void accountout();
+void update();
 
 int logining=0;
 char onID[100];
@@ -34,37 +35,35 @@ int main()
     head1->next1 = NULL;
     word* head2 = malloc(sizeof(word));
     head2->next2 = NULL;
+    FILE *fp;//id 목록 연결 리스트에 담기
+    fp = fopen("id.txt", "rb");
+    while(!feof(fp))
+    {
+        char id[100], pw[100], name[100];
+        user* _user = malloc(sizeof(user));
+        _user->next1 = head1->next1;
+        fscanf(fp, "%s %s %s", id, pw, name);
+        strcpy(_user -> userid, id);
+        strcpy(_user -> userpw, pw);
+        strcpy(_user -> username, name);
+        head1->next1 = _user;
+    }
+    fclose(fp);
+    
+    fp = fopen("dic.txt", "rb"); //영단어 목록 연결 리스트에 담기
+    while(!feof(fp))
+    {
+        char ko[100], en[100];
+        word* _word = malloc(sizeof(word));
+        _word->next2 = head2->next2;
+        fscanf(fp, "%s %s", en, ko);
+        strcpy(_word -> eng, en);
+        strcpy(_word -> kor, ko);
+        head2->next2 = _word;
+    }
+    fclose(fp);
     while(1)
     {
-        FILE *fp;//id 목록 연결 리스트에 담기
-        fp = fopen("id.txt", "rb");
-        while(!feof(fp))
-        {
-            char id[100], pw[100], name[100];
-            user* _user = malloc(sizeof(user));
-            _user->next1 = head1->next1;
-            fscanf(fp, "%s %s %s", id, pw, name);
-            strcpy(_user -> userid, id);
-            strcpy(_user -> userpw, pw);
-            strcpy(_user -> username, name);
-            head1->next1 = _user;
-        }
-        fclose(fp);
-        
-        FILE *fp;//영단어 목록 연결 리스트에 담기
-        fp = fopen("dic.txt", "rb");
-        while(!feof(fp))
-        {
-            char ko[100], en[100];
-            word* _word = malloc(sizeof(word));
-            _word->next2 = head2->next2;
-            fscanf(fp, "%s %s", en, ko);
-            strcpy(_word -> eng, en);
-            strcpy(_word -> kor, ko);
-            head2->next2 = _word;
-        }
-        fclose(fp);
-
         int menu=0;
 
         if(logining==1)
@@ -105,7 +104,6 @@ int main()
         }
         else if(menu==4)
         {
-            wordsort();
             engword();
         }
         else if(menu==5)
@@ -115,7 +113,10 @@ int main()
                 printf("로그인 상태가 아닙니다. 초기 화면으로 돌아갑니다.\n");
             }
             else
+            {
                 accountout(head1);
+                update(head1);
+            }
         }
         else if(menu==6)
         {
@@ -234,16 +235,34 @@ void accountout(user* target)
     
     if (yesorno == 'y')
     {
-        user* temp = target->next1;
+        user* head = NULL;
+        user* temp = target;
         while(temp != NULL)
         {
             if(strcmp(temp->userid, onID)==0)
             {
-                
+                head->next1 = temp->next1;
+                free(temp);
+                logining = 0;
+                break;
             }
+            head = temp;
             temp = temp->next1;
         }
     }
     else if (yesorno == 'n')
         printf("회원 탈퇴가 취소되었습니다. 초기화면으로 돌아갑니다.\n");
+}
+
+void update(user* target)
+{
+    FILE *fp;
+    fp=fopen("id.txt", "wb");
+    user* temp = target->next1;
+    while(temp != NULL)
+    {
+        fprintf(fp, "%s %s %s\n", temp->userid, temp->userpw, temp->username);
+        temp = temp->next1;
+    }
+    fclose(fp);
 }
