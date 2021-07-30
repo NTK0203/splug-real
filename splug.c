@@ -231,18 +231,21 @@ void logout()
 
 void wordsort(word* target)
 {
-    word* head = target;
-    word* temp = target->next2;
-    word* set = NULL;
     for (int i = 0; i < wordnum; i++)
     {
+        char set[100];
+        word* head = target->next2;
+        word* temp = head->next2;
         while(temp != NULL)
         {
             if(strcmp(head->eng, temp->eng)>0)
             {
-                set = head->next2;
-                head->next2 = temp->next2;
-                temp->next2 = set;
+                strcpy(set, head->eng);
+                strcpy(head->eng, temp->eng);
+                strcpy(temp->eng, set);
+                strcpy(set, head->kor);
+                strcpy(head->kor, temp->kor);
+                strcpy(temp->kor, set);
             }
             head = head->next2;
             temp = temp->next2;
