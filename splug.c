@@ -11,7 +11,8 @@ void wordsort();
 void accountout();
 void update();
 
-int logining=0;
+int logining = 0;
+int wordnum = 0;
 char onID[100];
 
 typedef struct user 
@@ -60,6 +61,7 @@ int main()
         strcpy(_word -> eng, en);
         strcpy(_word -> kor, ko);
         head2->next2 = _word;
+        wordnum++;
     }
     fclose(fp);
     while(1)
@@ -104,7 +106,14 @@ int main()
         }
         else if(menu==4)
         {
-            engword();
+            wordsort(head2);//정렬
+            word* temp = head2->next2;//테스트용 출력
+            while(temp != NULL)
+            {
+                printf("%s %s\n", temp->eng, temp->kor);
+                temp = temp->next2;
+            }
+            engword(head2);
         }
         else if(menu==5)
         {
@@ -220,9 +229,52 @@ void logout()
         printf("로그아웃이 취소되었습니다. 초기화면으로 돌아갑니다.\n");
 }
 
-void engword()
+void wordsort(word* target)
 {
+    word* head = target;
+    word* temp = target->next2;
+    word* set = NULL;
+    for (int i = 0; i < wordnum; i++)
+    {
+        while(temp != NULL)
+        {
+            if(strcmp(head->eng, temp->eng)>0)
+            {
+                set = head->next2;
+                head->next2 = temp->next2;
+                temp->next2 = set;
+            }
+            head = head->next2;
+            temp = temp->next2;
+        }
+    }
+}
 
+void engword(word* target)
+{
+    char answer[100];
+    int point = 0, count = 0;
+    word* temp = target->next2;
+    while(temp != NULL)
+    {
+        printf("%s -> ", temp->kor);
+        scanf("%s", answer);
+        getchar();
+        if (strcmp(answer,".quit") == 0)
+        {
+            break;
+        }
+        else if (strcmp(temp->eng, answer)==0)
+        {
+            printf("correct!\n");
+            point++;
+        }
+        else
+            printf("incorrect!\n");
+        count++;    
+        temp = temp->next2;
+    }
+    printf("맞춘 개수는 총 %d개 중, %d개 입니다.\n", count, point);
 }
 
 void accountout(user* target)
