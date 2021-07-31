@@ -36,8 +36,13 @@ int main()
     head1->next1 = NULL;
     word* head2 = malloc(sizeof(word));
     head2->next2 = NULL;
-    FILE *fp;//id 목록 연결 리스트에 담기
-    fp = fopen("id.txt", "rb");
+    FILE *fp;
+    if (!(fp = fopen("id.txt", "rb")))//파일이 없을시 생성
+    {
+        fp = fopen("id.txt", "wb");
+        fclose(fp);
+    }
+    fp = fopen("id.txt", "rb");//id 목록 연결 리스트에 담기
     while(!feof(fp))
     {
         char id[100], pw[100], name[100];
@@ -84,6 +89,7 @@ int main()
             else
             {
                 registration(head1);
+                update(head1);
             }
         }
         else if(menu==2)
@@ -107,13 +113,7 @@ int main()
         else if(menu==4)
         {
             wordsort(head2);//정렬
-            word* temp = head2->next2;//테스트용 출력
-            while(temp != NULL)
-            {
-                printf("%s %s\n", temp->eng, temp->kor);
-                temp = temp->next2;
-            }
-            engword(head2);
+            engword(head2);//단어 맞추기
         }
         else if(menu==5)
         {
@@ -129,6 +129,7 @@ int main()
         }
         else if(menu==6)
         {
+            system("clear");
             printf("다음에 또 만나요!!\n");
             break;
         }
